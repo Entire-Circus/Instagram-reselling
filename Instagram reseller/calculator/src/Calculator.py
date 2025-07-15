@@ -47,7 +47,7 @@ base_price = st.sidebar.number_input(f"Base Price (in {base_currency})", min_val
 delivery_price_cad = st.sidebar.number_input("Delivery Price (in CAD)", min_value=0.0, step=0.01, value=10.0)
 ad_price_usd = st.sidebar.number_input("Ad Price (in USD)", min_value=0.0, step=0.01, value=5.0)
 
-discount_percent = st.sidebar.slider("Discount (%)", 0, 100, value=0)
+discount_percent = st.sidebar.selectbox("Discount (%)", min_value=0.0, step=0.01, value=0)
 
 target_currency = st.sidebar.selectbox("Convert Final Price To", ["CAD", "USD"])
 
