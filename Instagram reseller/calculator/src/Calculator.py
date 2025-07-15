@@ -49,7 +49,7 @@ ad_price_usd = st.sidebar.number_input("Ad Price (in USD)", min_value=0.0, step=
 
 discount_percent = st.sidebar.number_input("Discount (%)", min_value=0.0, step=0.01, value=0.0)
 
-target_currency = st.sidebar.selectbox("Convert Final Price To", ["CAD", "USD"])
+target_currency = st.sidebar.selectbox("Convert Final Price To", ["USD", "CAD"])
 
 # Fetch exchange rates needed (replace with your actual API key)
 API_KEY = "cf5d8f6a9b86c63a5aaf8c29"
