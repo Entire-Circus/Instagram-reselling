@@ -97,6 +97,8 @@ final_price = discounted_base + delivery_converted + ad_converted
 # Show breakdown
 st.subheader("Input Summary")
 st.markdown(f"- Base Price: **{base_price:.2f} {base_currency}** → {base_converted:.2f} {target_currency}")
+st.markdown(f"- Real weight {real_weight} kg")
+st.markdown(f"- Formula weight {formula_weight} kg")
 st.markdown(f"- Delivery Price: **{delivery_cost:.2f} CAD** → {delivery_converted:.2f} {target_currency}")
 st.markdown(f"- Advertising Cost: **{ad_price_usd:.2f} USD** → {ad_converted:.2f} {target_currency}")
 st.markdown(f"- Discount: **{discount_percent}%** → −{discount_amount:.2f} {target_currency}")
