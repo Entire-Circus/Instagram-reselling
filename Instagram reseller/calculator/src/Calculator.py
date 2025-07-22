@@ -1,4 +1,5 @@
 import streamlit as st
+import math
 import requests
 
 st.set_page_config(page_title="Price Calculator (CAD/USD)", layout="centered")
@@ -44,14 +45,25 @@ st.sidebar.header("Input Parameters")
 base_currency = st.sidebar.selectbox("Base Price Currency", ["CAD", "USD"])
 base_price = st.sidebar.number_input(f"Base Price (in {base_currency})", min_value=0.0, step=0.01, value=100.0)
 
-delivery_price_cad = st.sidebar.number_input("Delivery Price (in CAD)", min_value=0.0, step=0.01, value=10.0)
 ad_price_usd = st.sidebar.number_input("Ad Price (in USD)", min_value=0.0, step=0.01, value=5.0)
 
 discount_percent = st.sidebar.number_input("Discount (%)", min_value=0.0, step=0.01, value=0.0)
 
 target_currency = st.sidebar.selectbox("Convert Final Price To", ["USD", "CAD"])
 
-# Fetch exchange rates needed (replace with your actual API key)
+st.sidebar.write("Weight Inputs")
+
+real_weight = st.sidebar.number_input("Real weight (kg)", min_value=0.1, step=0.01, value=0.0)
+
+st.sidebar.write("Formula weight")
+
+length = st.sidebar.number_input("Length (cm)", min_value=0.1, step=0.01, value = 0.0)
+
+width = st.sidebar.number_input("Width (cm)", min_value=0.1, step=0.01, value = 0.0)
+
+height =  st.sidebar.number_input("Height (cm)", min_value=0.1, step=0.01, value = 0.0)
+
+# Fetch exchange rates needed 
 API_KEY = "cf5d8f6a9b86c63a5aaf8c29"
 rate_base_to_target = get_exchange_rate(base_currency, target_currency, API_KEY)
 rate_cad_to_target = get_exchange_rate("CAD", target_currency, API_KEY)
@@ -62,22 +74,32 @@ if None in [rate_base_to_target, rate_cad_to_target, rate_usd_to_target]:
 
 # Convert all inputs to target currency
 base_converted = base_price * rate_base_to_target
-delivery_converted = delivery_price_cad * rate_cad_to_target
 ad_converted = ad_price_usd * rate_usd_to_target
 
 # Apply discount on base price only
 discount_amount = base_converted * (discount_percent / 100)
 discounted_base = base_converted - discount_amount
 
-final_price = discounted_base + delivery_converted + ad_converted
+# Delivery calculation
+formula_weight = length * width * height / 500
+
+weight = max(formula_weight, real_weight)
+
+charged_weight = math.ceil(weight) 
+
+# Air in CAD
+delivery_cost = charged_weight * 9.95 + 15
+
+delivery_converted = delivery_cost * rate_cad_to_target
+# Final price calculation
+final_price = discounted_base + delivery_converted + ad_converted 
 
 # Show breakdown
 st.subheader("Input Summary")
 st.markdown(f"- Base Price: **{base_price:.2f} {base_currency}** → {base_converted:.2f} {target_currency}")
-st.markdown(f"- Delivery Price: **{delivery_price_cad:.2f} CAD** → {delivery_converted:.2f} {target_currency}")
+st.markdown(f"- Delivery Price: **{delivery_cost:.2f} CAD** → {delivery_converted:.2f} {target_currency}")
 st.markdown(f"- Advertising Cost: **{ad_price_usd:.2f} USD** → {ad_converted:.2f} {target_currency}")
 st.markdown(f"- Discount: **{discount_percent}%** → −{discount_amount:.2f} {target_currency}")
-
 st.markdown("---")
 st.markdown(f"### Final Price: `{final_price:.2f} {target_currency}`")
 
