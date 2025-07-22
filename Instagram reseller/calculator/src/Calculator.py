@@ -53,15 +53,15 @@ target_currency = st.sidebar.selectbox("Convert Final Price To", ["USD", "CAD"])
 
 st.sidebar.write("Weight Inputs")
 
-real_weight = st.sidebar.number_input("Real weight (kg)", min_value=0.1, step=0.01, value=0.0)
+real_weight = st.sidebar.number_input("Real weight (kg)", min_value=0.0, step=0.01, value=0.0)
 
 st.sidebar.write("Formula weight")
 
-length = st.sidebar.number_input("Length (cm)", min_value=0.1, step=0.01, value = 0.0)
+length = st.sidebar.number_input("Length (cm)", min_value=0.0, step=0.01, value = 0.0)
 
-width = st.sidebar.number_input("Width (cm)", min_value=0.1, step=0.01, value = 0.0)
+width = st.sidebar.number_input("Width (cm)", min_value=0.0, step=0.01, value = 0.0)
 
-height =  st.sidebar.number_input("Height (cm)", min_value=0.1, step=0.01, value = 0.0)
+height =  st.sidebar.number_input("Height (cm)", min_value=0.0, step=0.01, value = 0.0)
 
 # Fetch exchange rates needed 
 API_KEY = "cf5d8f6a9b86c63a5aaf8c29"
