@@ -65,9 +65,17 @@ height =  st.sidebar.number_input("Height (cm)", min_value=0.0, step=0.01, value
 
 # Fetch exchange rates needed 
 API_KEY = "cf5d8f6a9b86c63a5aaf8c29"
-rate_base_to_target = get_exchange_rate(base_currency, target_currency, API_KEY)
-rate_cad_to_target = get_exchange_rate("CAD", target_currency, API_KEY)
-rate_usd_to_target = get_exchange_rate("USD", target_currency, API_KEY)
+rate_base_to_target = (
+    1.0 if base_currency == target_currency else get_exchange_rate(base_currency, target_currency, API_KEY)
+)
+
+rate_cad_to_target = (
+    1.0 if target_currency == "CAD" else get_exchange_rate("CAD", target_currency, API_KEY)
+)
+
+rate_usd_to_target = (
+    1.0 if target_currency == "USD" else get_exchange_rate("USD", target_currency, API_KEY)
+)
 
 if None in [rate_base_to_target, rate_cad_to_target, rate_usd_to_target]:
     st.stop()
