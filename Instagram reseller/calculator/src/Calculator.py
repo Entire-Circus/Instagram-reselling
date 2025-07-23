@@ -46,7 +46,7 @@ base_currency = st.sidebar.selectbox("Base Price Currency", ["CAD", "USD"])
 
 base_price = st.sidebar.number_input(f"Base Price (in {base_currency})", min_value=0.0, step=0.01, value=100.0)
 
-delivery_way = st.sidebar.selectbox("Base Price Currency", ["Air", "Sea"])
+delivery_way = st.sidebar.selectbox("Delivery Way", ["Air", "Sea"])
 
 ad_price_usd = st.sidebar.number_input("Ad Price (in USD)", min_value=0.0, step=0.01, value=5.0)
 
