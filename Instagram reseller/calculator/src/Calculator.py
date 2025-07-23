@@ -43,7 +43,10 @@ def get_exchange_rate(base="USD", target="CAD", api_key="YOUR_API_KEY_HERE"):
 st.sidebar.header("Input Parameters")
 
 base_currency = st.sidebar.selectbox("Base Price Currency", ["CAD", "USD"])
+
 base_price = st.sidebar.number_input(f"Base Price (in {base_currency})", min_value=0.0, step=0.01, value=100.0)
+
+delivery_way = st.sidebar.selectbox("Base Price Currency", ["Air", "Sea"])
 
 ad_price_usd = st.sidebar.number_input("Ad Price (in USD)", min_value=0.0, step=0.01, value=5.0)
 
@@ -95,8 +98,11 @@ weight = max(formula_weight, real_weight)
 
 charged_weight = math.ceil(weight) 
 
-# Air in CAD
-delivery_cost = charged_weight * 9.95 + 15
+# Delviery cost
+if delivery_way == "Air":
+    delivery_cost = charged_weight * 8.45 + 15
+elif delivery_way == "Sea":
+    delivery_cost = charged_weight * 4.45 + 15
 
 delivery_converted = delivery_cost * rate_cad_to_target
 # Final price calculation
