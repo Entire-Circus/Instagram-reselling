@@ -15,9 +15,7 @@ def get_exchange_rate(base="USD", target="CAD", api_key="YOUR_API_KEY_HERE"):
         return 1.0
 
     url = f"https://open.er-api.com/v6/latest/{base}"
-    headers = {
-        "Authorization": f"Bearer {api_key}"
-    }
+    headers = {"Authorization": f"Bearer {api_key}"}
 
     try:
         response = requests.get(url, headers=headers, timeout=5)
@@ -43,39 +41,31 @@ def get_exchange_rate(base="USD", target="CAD", api_key="YOUR_API_KEY_HERE"):
 st.sidebar.header("Input Parameters")
 
 base_currency = st.sidebar.selectbox("Base Price Currency", ["CAD", "USD"])
-
 base_price = st.sidebar.number_input(f"Base Price (in {base_currency})", min_value=0.0, step=0.01, value=100.0)
 
 delivery_way = st.sidebar.selectbox("Delivery Way", ["Air", "Sea"])
-
 ad_price_usd = st.sidebar.number_input("Ad Price (in USD)", min_value=0.0, step=0.01, value=5.0)
 
-discount_percent = st.sidebar.number_input("Discount (%)", min_value=0.0, step=0.01, value=0.0)
+markup_percent = st.sidebar.number_input("Markup (%)", min_value=0.0, step=0.01, value=0.0)
 
 target_currency = st.sidebar.selectbox("Convert Final Price To", ["USD", "CAD"])
 
 st.sidebar.write("Weight Inputs")
-
 real_weight = st.sidebar.number_input("Real weight (kg)", min_value=0.0, step=0.01, value=0.0)
 
 st.sidebar.write("Formula weight")
+length = st.sidebar.number_input("Length (cm)", min_value=0.0, step=0.01, value=0.0)
+width = st.sidebar.number_input("Width (cm)", min_value=0.0, step=0.01, value=0.0)
+height = st.sidebar.number_input("Height (cm)", min_value=0.0, step=0.01, value=0.0)
 
-length = st.sidebar.number_input("Length (cm)", min_value=0.0, step=0.01, value = 0.0)
-
-width = st.sidebar.number_input("Width (cm)", min_value=0.0, step=0.01, value = 0.0)
-
-height =  st.sidebar.number_input("Height (cm)", min_value=0.0, step=0.01, value = 0.0)
-
-# Fetch exchange rates needed 
+# Fetch exchange rates
 API_KEY = "cf5d8f6a9b86c63a5aaf8c29"
 rate_base_to_target = (
     1.0 if base_currency == target_currency else get_exchange_rate(base_currency, target_currency, API_KEY)
 )
-
 rate_cad_to_target = (
     1.0 if target_currency == "CAD" else get_exchange_rate("CAD", target_currency, API_KEY)
 )
-
 rate_usd_to_target = (
     1.0 if target_currency == "USD" else get_exchange_rate("USD", target_currency, API_KEY)
 )
@@ -87,36 +77,39 @@ if None in [rate_base_to_target, rate_cad_to_target, rate_usd_to_target]:
 base_converted = base_price * rate_base_to_target
 ad_converted = ad_price_usd * rate_usd_to_target
 
-# Apply discount on base price only
-discount_amount = base_converted * (discount_percent / 100)
-discounted_base = base_converted - discount_amount
+# Tax (12%)
+tax_rate = 0.12
+tax_amount = base_converted * tax_rate
+price_with_tax = base_converted + tax_amount
+
+# Apply markup after tax
+markup_amount = price_with_tax * (markup_percent / 100)
+price_with_markup = price_with_tax + markup_amount
 
 # Delivery calculation
 formula_weight = length * width * height / 500
-
 weight = max(formula_weight, real_weight)
+charged_weight = math.ceil(weight)
 
-charged_weight = math.ceil(weight) 
-
-# Delviery cost
 if delivery_way == "Air":
     delivery_cost = charged_weight * 8.45 + 15
 elif delivery_way == "Sea":
     delivery_cost = charged_weight * 4.45 + 15
 
 delivery_converted = delivery_cost * rate_cad_to_target
-# Final price calculation
-final_price = discounted_base + delivery_converted + ad_converted 
+
+# Final price
+final_price = price_with_markup + delivery_converted + ad_converted
 
 # Show breakdown
 st.subheader("Input Summary")
 st.markdown(f"- Base Price: **{base_price:.2f} {base_currency}** → {base_converted:.2f} {target_currency}")
-st.markdown(f"- Real weight {real_weight} kg")
-st.markdown(f"- Formula weight {formula_weight} kg")
+st.markdown(f"- Tax (12%): +{tax_amount:.2f} {target_currency} → **{price_with_tax:.2f} {target_currency}**")
+st.markdown(f"- Markup: **{markup_percent}%** → +{markup_amount:.2f} {target_currency}")
+st.markdown(f"- Price after Markup (before Delivery & Ads): **{price_with_markup:.2f} {target_currency}**")
+st.markdown(f"- Real weight: {real_weight} kg")
+st.markdown(f"- Formula weight: {formula_weight:.2f} kg")
 st.markdown(f"- Delivery Price: **{delivery_cost:.2f} CAD** → {delivery_converted:.2f} {target_currency}")
 st.markdown(f"- Advertising Cost: **{ad_price_usd:.2f} USD** → {ad_converted:.2f} {target_currency}")
-st.markdown(f"- Discount: **{discount_percent}%** → −{discount_amount:.2f} {target_currency}")
 st.markdown("---")
 st.markdown(f"### Final Price: `{final_price:.2f} {target_currency}`")
-
-
