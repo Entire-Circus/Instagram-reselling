@@ -44,7 +44,10 @@ base_currency = st.sidebar.selectbox("Base Price Currency", ["CAD", "USD"])
 base_price = st.sidebar.number_input(f"Base Price (in {base_currency})", min_value=0.0, step=0.01, value=100.0)
 
 delivery_way = st.sidebar.selectbox("Delivery Way", ["Air", "Sea"])
+include_delivery = st.sidebar.checkbox("Include Delivery Cost", value=True)
+
 ad_price_usd = st.sidebar.number_input("Ad Price (in USD)", min_value=0.0, step=0.01, value=5.0)
+include_ads = st.sidebar.checkbox("Include Advertising Cost", value=True)
 
 markup_percent = st.sidebar.number_input("Markup (%)", min_value=0.0, step=0.01, value=0.0)
 
@@ -96,7 +99,8 @@ if delivery_way == "Air":
 elif delivery_way == "Sea":
     delivery_cost = charged_weight * 4.45 + 15
 
-delivery_converted = delivery_cost * rate_cad_to_target
+delivery_converted = delivery_cost * rate_cad_to_target if include_delivery else 0.0
+ad_converted = ad_converted if include_ads else 0.0
 
 # Final price
 final_price = price_with_markup + delivery_converted + ad_converted
@@ -109,7 +113,16 @@ st.markdown(f"- Markup: **{markup_percent}%** → +{markup_amount:.2f} {target_c
 st.markdown(f"- Price after Markup (before Delivery & Ads): **{price_with_markup:.2f} {target_currency}**")
 st.markdown(f"- Real weight: {real_weight} kg")
 st.markdown(f"- Formula weight: {formula_weight:.2f} kg")
-st.markdown(f"- Delivery Price: **{delivery_cost:.2f} CAD** → {delivery_converted:.2f} {target_currency}")
-st.markdown(f"- Advertising Cost: **{ad_price_usd:.2f} USD** → {ad_converted:.2f} {target_currency}")
+
+if include_delivery:
+    st.markdown(f"- Delivery Price: **{delivery_cost:.2f} CAD** → {delivery_converted:.2f} {target_currency}")
+else:
+    st.markdown("- Delivery Price: **Excluded**")
+
+if include_ads:
+    st.markdown(f"- Advertising Cost: **{ad_price_usd:.2f} USD** → {ad_converted:.2f} {target_currency}")
+else:
+    st.markdown("- Advertising Cost: **Excluded**")
+
 st.markdown("---")
 st.markdown(f"### Final Price: `{final_price:.2f} {target_currency}`")
